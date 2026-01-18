@@ -40,7 +40,9 @@ namespace t3 {
             camera::Camera* camera;
 
             glm::mat4 projectionMatrix;
-            bool renderCameraTarget;
+            bool renderCameraTarget = false;
+
+            gfxc::TextRenderer* textRenderer;
 
             std::unordered_map<std::string, Texture2D*> mapTextures;
     };
