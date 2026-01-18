@@ -25,7 +25,7 @@ void Tema3::Init() {
 
     {
         Texture2D* texture = new Texture2D();
-        texture->Load2D(PATH_JOIN(sourceTextureDir, "trunk.jpeg").c_str(), GL_REPEAT);
+        texture->Load2D(PATH_JOIN(sourceTextureDir, "trunk1.jpg").c_str(), GL_REPEAT);
         mapTextures["bark"] = texture;
     }
 
@@ -154,26 +154,10 @@ void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
     
     int useTextureVal = 0;
 
-    if (texture1) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1->GetTextureID());
-        glUniform1i(glGetUniformLocation(shader->program, "texture1"), 0);
-
-        useTextureVal = 1; 
-    }
-
-    if (texture2) {
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2->GetTextureID());
-        glUniform1i(glGetUniformLocation(shader->program, "texture2"), 1);
-
-        if (isTrunk == 1 || useTextureVal == 0) {
-            useTextureVal = 2;
-        }
-    }
     glUniform1i(glGetUniformLocation(shader->program, "useTexture"), useTextureVal);
 
-    mesh->Render();
+    glBindVertexArray(mesh->GetBuffers()->m_VAO);
+    glDrawElements(mesh->GetDrawMode(), static_cast<GLsizei>(mesh->indices.size()), GL_UNSIGNED_INT, 0);
 }
 
 void Tema3::OnInputUpdate(float deltaTime, int mods) {
