@@ -15,8 +15,10 @@
 #define DARK_GRAY_COLOR glm::vec3(0.2f, 0.2f, 0.2f)
 #define WHITE_COLOR glm::vec3(1.f, 1.f, 1.f)
 #define ORANGE_COLOR glm::vec3(0.8f, 0.5f, 0.2f)
-#define BROWN_COLOR glm::vec3(0.6f, 0.3f, 0.1f)
+#define BROWN_COLOR glm::vec3(0.4f, 0.25f, 0.07f)
 
 namespace object3D {
     Mesh* CreateTree(const std::string& name, glm::vec3 center);
+
+    Mesh* CreateLeaves(const std::string& name, glm::vec3 center);
 }

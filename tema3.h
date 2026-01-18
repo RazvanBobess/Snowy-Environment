@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <time.h>
 
 #include "components/simple_scene.h"
 #include "components/transform.h"
@@ -25,7 +26,7 @@ namespace t3 {
             void Update(float deltaTimeSeconds) override;
             void FrameEnd() override;
 
-            void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture = NULL);
+            void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture1 = NULL, Texture2D* texture2 = NULL, float bendPhase = 0.f, float bendFrequency = 0.f);
 
             void OnInputUpdate(float deltaTime, int mods) override;
             void OnKeyPress(int key, int mods) override;

@@ -146,10 +146,26 @@ Mesh* object3D::CreateTree
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    createCylinder3(center, 0.5f, 5.f, 20, BROWN_COLOR, vertices, indices);
-    createCube(center + glm::vec3(-1.2f, 2.f, 0.5f), 2.4f, 0.4f, 1.f, GREEN_COLOR, vertices, indices);
+    createCylinder3(center, 0.2f, 5.f, 20, BROWN_COLOR, vertices, indices);
 
     Mesh* tree = new Mesh(name);
     tree->InitFromData(vertices, indices);
     return tree;
+}
+
+Mesh* object3D::CreateLeaves(const std::string& name, glm::vec3 center) 
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+
+    createCube(center + glm::vec3(-1.5f, 2.f, 0.5f), 3.f, 0.2f, 1.f, DARK_GREEN_COLOR, vertices, indices);
+    createCube(center + glm::vec3(-1.35f, 2.4f, 0.47f), 2.7f, 0.3f, 0.94f, DARK_GREEN_COLOR, vertices, indices);
+    createCube(center + glm::vec3(-1.2f, 2.9f, 0.44f), 2.4f, 0.35f, 0.88f, DARK_GREEN_COLOR, vertices, indices);
+    createCube(center + glm::vec3(-1.05f, 3.4f, 0.425f), 2.1f, 0.38f, 0.85f, DARK_GREEN_COLOR, vertices, indices);
+    createCube(center + glm::vec3(-0.7f, 3.9f, 0.41f), 1.4f, 0.4f, 0.82f, DARK_GREEN_COLOR, vertices, indices);
+    createCube(center + glm::vec3(-0.25f, 4.5f, 0.4f), 0.5f, 0.5f, 0.8f, DARK_GREEN_COLOR, vertices, indices);
+
+    Mesh* leaves = new Mesh(name);
+    leaves->InitFromData(vertices, indices);
+    return leaves;
 }

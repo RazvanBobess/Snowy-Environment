@@ -24,6 +24,18 @@ void Tema3::Init() {
     projectionMatrix = glm::perspective(RADIANS(60.0f), window->props.aspectRatio, 0.01f, 200.0f);
 
     {
+        Texture2D* texture = new Texture2D();
+        texture->Load2D(PATH_JOIN(sourceTextureDir, "trunk.jpeg").c_str(), GL_REPEAT);
+        mapTextures["bark"] = texture;
+    }
+
+    {
+        Texture2D* texture = new Texture2D();
+        texture->Load2D(PATH_JOIN(sourceTextureDir, "leaves.jpg").c_str(), GL_REPEAT);
+        mapTextures["leaves"] = texture;
+    }
+
+    {
         Shader* shader = new Shader("VC");
         shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "tema3", "shaders", "VertexShader.glsl"), GL_VERTEX_SHADER);
         shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "tema3", "shaders", "FragmentShader.glsl"), GL_FRAGMENT_SHADER);
@@ -38,12 +50,9 @@ void Tema3::Init() {
 
         Mesh* tree = object3D::CreateTree("tree", glm::vec3(0, 0, 0));
         AddMeshToList(tree);
-    }
 
-    {
-        glm::ivec2 windowResolution = window->GetResolution();
-        textRenderer = new gfxc::TextRenderer(window->props.selfDir, windowResolution.x, windowResolution.y);
-        textRenderer->Load("../assets/fonts/Hack-Bold.ttf", 20);
+        Mesh* leaves = object3D::CreateLeaves("leaves", glm::vec3(0, 0, 0));
+        AddMeshToList(leaves);
     }
 }
 
@@ -58,16 +67,52 @@ void Tema3::FrameStart() {
 }
 
 void Tema3::Update(float deltaTimeSeconds) {
-    glm::mat4 modelMatrix = glm::mat4(1);
+    
+    {
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(8.f, 0, 1.f));
+        RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.2f, 0.6f);
+    }
 
     {
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, 0));
-        RenderMesh(meshes["tree"], shaders["VertexColor"], modelMatrix);
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(5.f, 0, -12.f));
+        RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.4f, 0.8f);
+    }
+
+    {
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(7.f, 0, 12.f));
+        RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.1f, 0.5f);
+    }
+
+    {
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(-8.f, 0, 21.f));
+        RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.3f, 0.7f);
+    }
+
+    {
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(-14.f, 0, -8.f));
+        RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.8f, 0.2f);
+    }
+
+    {
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(-6.f, 0, -15.3f));
+        RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.7f, 0.3f);
     }
 
     if (renderCameraTarget)
     {
-        modelMatrix = glm::mat4(1);
+        glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, camera->GetTargetPosition());
         modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
         RenderMesh(meshes["sphere"], shaders["VertexColor"], modelMatrix);
@@ -78,36 +123,55 @@ void Tema3::FrameEnd() {
     // Code to execute at the end of each fram
 }
 
-void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture) {
-    if (!mesh || !shader || !shader->GetProgramID()) {
+void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture1, Texture2D* texture2, float bendPhase, float bendFrequency) {
+    if (!mesh || !shader || !shader->GetProgramID())
         return;
-    }
 
     glUseProgram(shader->program);
 
-    GLint loc_model_matrix = glGetUniformLocation(shader->program, "Model");
-    glUniformMatrix4fv(loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(shader->program, "Model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(shader->program, "View"), 1, GL_FALSE, glm::value_ptr(GetSceneCamera()->GetViewMatrix()));
+    glUniformMatrix4fv(glGetUniformLocation(shader->program, "Projection"), 1, GL_FALSE, glm::value_ptr(this->projectionMatrix));
 
-    glm::mat4 viewMatrix = camera->GetViewMatrix();
-    int loc_view_matrix = glGetUniformLocation(shader->program, "View");
-    glUniformMatrix4fv(loc_view_matrix, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+    glUniform1f(glGetUniformLocation(shader->program, "time"), Engine::GetElapsedTime());
 
-    glm::mat4 projectionMatrix = this->projectionMatrix;
-    int loc_projection_matrix = glGetUniformLocation(shader->program, "Projection");
-    glUniformMatrix4fv(loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+    int isTrunk = 0;
+    int isLeaves = 0;
 
-    GLint useTexture = glGetUniformLocation(shader->program, "useTexture");
+    if (mesh == meshes["tree"]) {
+        isTrunk = 1;
+        glUniform1f(glGetUniformLocation(shader->program, "treeHeight"), 5.0f); 
+    } 
+    else if (mesh == meshes["leaves"]) {
+        isLeaves = 1;
+        glUniform1f(glGetUniformLocation(shader->program, "bendPhase"), bendPhase);
+        glUniform1f(glGetUniformLocation(shader->program, "bendFrequency"), bendFrequency);
+        glUniform1f(glGetUniformLocation(shader->program, "treeHeight"), 5.0f); 
+    }
 
-    if (texture)
-    {
+    glUniform1i(glGetUniformLocation(shader->program, "isTrunk"), isTrunk);
+    glUniform1i(glGetUniformLocation(shader->program, "isLeaves"), isLeaves);
+    
+    int useTextureVal = 0;
+
+    if (texture1) {
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture->GetTextureID());
+        glBindTexture(GL_TEXTURE_2D, texture1->GetTextureID());
         glUniform1i(glGetUniformLocation(shader->program, "texture1"), 0);
-        glUniform1i(useTexture, 1);
+
+        useTextureVal = 1; 
     }
-    else {
-        glUniform1i(useTexture, 0);
+
+    if (texture2) {
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2->GetTextureID());
+        glUniform1i(glGetUniformLocation(shader->program, "texture2"), 1);
+
+        if (isTrunk == 1 || useTextureVal == 0) {
+            useTextureVal = 2;
+        }
     }
+    glUniform1i(glGetUniformLocation(shader->program, "useTexture"), useTextureVal);
 
     mesh->Render();
 }
