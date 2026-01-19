@@ -71,7 +71,7 @@ void Tema3::Init() {
 }
 
 void Tema3::FrameStart() {
-    glClearColor(0, 0, 0, 1);
+    glClearColor(0.7f, 0.7f, 0.75f, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::ivec2 resolution = window->GetResolution();
@@ -90,6 +90,7 @@ void Tema3::Update(float deltaTimeSeconds) {
     {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(5.f, 0, -12.f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(-65.f), glm::vec3(0, 1, 0));
         RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
         RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.4f, 0.8f);
     }
@@ -97,13 +98,39 @@ void Tema3::Update(float deltaTimeSeconds) {
     {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(7.f, 0, 12.f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(-25.f), glm::vec3(0, 1, 0));
         RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
         RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.1f, 0.5f);
     }
 
     {
         glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(-7.f, 0, -7.f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.f), glm::vec3(0, 1, 0));
+        RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.12f, 0.53f);
+    }
+
+    {
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(-7.f, 0, 15.f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(-56.f), glm::vec3(0, 1, 0));
+        RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.21f, 0.37f);
+    }
+
+    {
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(-9.f, 0, 4.f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(60.f), glm::vec3(0, 1, 0));
+        RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.09f, 0.27f);
+    }
+
+    {
+        glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(-8.f, 0, 21.f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(65.f), glm::vec3(0, 1, 0));
         RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
         RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.3f, 0.7f);
     }
@@ -111,6 +138,7 @@ void Tema3::Update(float deltaTimeSeconds) {
     {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(-14.f, 0, -8.f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(45.f), glm::vec3(0, 1, 0));
         RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
         RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.8f, 0.2f);
     }
@@ -118,6 +146,7 @@ void Tema3::Update(float deltaTimeSeconds) {
     {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(-6.f, 0, -15.3f));
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.f), glm::vec3(0, 1, 0));
         RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
         RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.7f, 0.3f);
     }
