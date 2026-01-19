@@ -36,6 +36,12 @@ void Tema3::Init() {
     }
 
     {
+        Texture2D* texture = new Texture2D();
+        texture->Load2D(PATH_JOIN(sourceTextureDir, "snowflake.jpg").c_str(), GL_REPEAT);
+        mapTextures["snow"] = texture;
+    }
+
+    {
         Shader* shader = new Shader("VC");
         shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "tema3", "shaders", "VertexShader.glsl"), GL_VERTEX_SHADER);
         shader->AddShader(PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "tema3", "shaders", "FragmentShader.glsl"), GL_FRAGMENT_SHADER);
@@ -53,6 +59,9 @@ void Tema3::Init() {
 
         Mesh* leaves = object3D::CreateLeaves("leaves", glm::vec3(0, 0, 0));
         AddMeshToList(leaves);
+
+        Mesh* terrain = object3D::CreateTerrain("terrain", glm::vec3(0, 0, 0));
+        AddMeshToList(terrain);
     }
 }
 
@@ -62,8 +71,6 @@ void Tema3::FrameStart() {
 
     glm::ivec2 resolution = window->GetResolution();
     glViewport(0, 0, resolution.x, resolution.y);
-
-    DrawCoordinateSystem();
 }
 
 void Tema3::Update(float deltaTimeSeconds) {
@@ -72,42 +79,48 @@ void Tema3::Update(float deltaTimeSeconds) {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(8.f, 0, 1.f));
         RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
-        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.2f, 0.6f);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.2f, 0.6f);
     }
 
     {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(5.f, 0, -12.f));
         RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
-        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.4f, 0.8f);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.4f, 0.8f);
     }
 
     {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(7.f, 0, 12.f));
         RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
-        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.1f, 0.5f);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.1f, 0.5f);
     }
 
     {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(-8.f, 0, 21.f));
         RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
-        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.3f, 0.7f);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.3f, 0.7f);
     }
 
     {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(-14.f, 0, -8.f));
         RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
-        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.8f, 0.2f);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.8f, 0.2f);
     }
 
     {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(-6.f, 0, -15.3f));
         RenderMesh(meshes["tree"], shaders["VC"], modelMatrix, mapTextures["bark"]);
-        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, nullptr, mapTextures["leaves"], 0.7f, 0.3f);
+        RenderMesh(meshes["leaves"], shaders["VC"], modelMatrix, mapTextures["leaves"], 0.7f, 0.3f);
+    }
+
+    {
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.f, 0, 0.f));
+        RenderMesh(meshes["terrain"], shaders["VC"], modelMatrix, mapTextures["snow"]);
     }
 
     if (renderCameraTarget)
@@ -115,7 +128,7 @@ void Tema3::Update(float deltaTimeSeconds) {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, camera->GetTargetPosition());
         modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
-        RenderMesh(meshes["sphere"], shaders["VertexColor"], modelMatrix);
+        RenderMesh(meshes["sphere"], shaders["VertexColor"], modelMatrix, mapTextures["snow"]);
     }
 }
 
@@ -123,7 +136,7 @@ void Tema3::FrameEnd() {
     // Code to execute at the end of each fram
 }
 
-void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture1, Texture2D* texture2, float bendPhase, float bendFrequency) {
+void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture1, float bendPhase, float bendFrequency) {
     if (!mesh || !shader || !shader->GetProgramID())
         return;
 
@@ -137,22 +150,43 @@ void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
 
     int isTrunk = 0;
     int isLeaves = 0;
+    int isSnow = 0;
+    int useTextureVal = 0;
 
     if (mesh == meshes["tree"]) {
         isTrunk = 1;
+        useTextureVal = 1;
         glUniform1f(glGetUniformLocation(shader->program, "treeHeight"), 5.0f); 
     } 
     else if (mesh == meshes["leaves"]) {
         isLeaves = 1;
+        useTextureVal = 1;
         glUniform1f(glGetUniformLocation(shader->program, "bendPhase"), bendPhase);
         glUniform1f(glGetUniformLocation(shader->program, "bendFrequency"), bendFrequency);
         glUniform1f(glGetUniformLocation(shader->program, "treeHeight"), 5.0f); 
+    } else if (mesh == meshes["terrain"]) {
+        isSnow = 1;
+        useTextureVal = 1;
     }
 
     glUniform1i(glGetUniformLocation(shader->program, "isTrunk"), isTrunk);
     glUniform1i(glGetUniformLocation(shader->program, "isLeaves"), isLeaves);
-    
-    int useTextureVal = 0;
+    glUniform1i(glGetUniformLocation(shader->program, "isSnow"), isSnow);
+
+    if (useTextureVal == 1 && texture1) {
+        glActiveTexture(GL_TEXTURE0);
+        texture1->BindToTextureUnit(GL_TEXTURE0);
+
+        if (isSnow == 1) {
+            glUniform1i(glGetUniformLocation(shader->program, "texture1"), 0);
+        } 
+        else if (isTrunk == 1) {
+            glUniform1i(glGetUniformLocation(shader->program, "texture2"), 0);
+        } 
+        else if (isLeaves == 1) {
+            glUniform1i(glGetUniformLocation(shader->program, "texture3"), 0);
+        }
+    }
 
     glUniform1i(glGetUniformLocation(shader->program, "useTexture"), useTextureVal);
 

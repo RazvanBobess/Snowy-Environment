@@ -169,3 +169,15 @@ Mesh* object3D::CreateLeaves(const std::string& name, glm::vec3 center)
     leaves->InitFromData(vertices, indices);
     return leaves;
 }
+
+Mesh* object3D::CreateTerrain(const std::string& name, glm::vec3 center) 
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+
+    createCube(center + glm::vec3(-50.f, -0.1f, 50.f), 100.f, 0.2f, 100.f, LIGHT_GRAY_COLOR, vertices, indices);
+
+    Mesh* terrain = new Mesh(name);
+    terrain->InitFromData(vertices, indices);
+    return terrain;
+}
