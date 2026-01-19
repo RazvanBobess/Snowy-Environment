@@ -142,12 +142,12 @@ void Tema3::Update(float deltaTimeSeconds) {
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix *= glm::translate(glm::mat4(1), glm::vec3(0.f, 9.f, 1.5f));
         modelMatrix *= glm::rotate(glm::mat4(1), angle1, glm::vec3(1, 0, 0));
-        RenderMesh(meshes["light_cone"], shaders["VertexColor"], modelMatrix);
+        RenderMesh(meshes["light_cone"], shaders["VC"], modelMatrix);
 
         modelMatrix = glm::mat4(1);
         modelMatrix *= glm::translate(glm::mat4(1), glm::vec3(0.f, 9.f, -1.5f));
         modelMatrix *= glm::rotate(glm::mat4(1), angle2, glm::vec3(1, 0, 0));
-        RenderMesh(meshes["light_cone"], shaders["VertexColor"], modelMatrix);
+        RenderMesh(meshes["light_cone"], shaders["VC"], modelMatrix);
     }
 
     if (renderCameraTarget)
