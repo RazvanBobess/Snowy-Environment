@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <unordered_map>
 
 #include "core/gpu/mesh.h"
 #include "utils/glm_utils.h"
@@ -24,4 +26,6 @@ namespace object3D {
     Mesh* CreateLeaves(const std::string& name, glm::vec3 center);
 
     Mesh* CreateTerrain(const std::string& name, glm::vec3 center);
+
+    Mesh* CreateObservationTower(std::unordered_map<std::string, Mesh*>& meshes, const char* name);
 }

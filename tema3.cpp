@@ -62,6 +62,9 @@ void Tema3::Init() {
 
         Mesh* terrain = object3D::CreateTerrain("terrain", glm::vec3(0, 0, 0));
         AddMeshToList(terrain);
+
+        Mesh* tower = object3D::CreateObservationTower(meshes, "tower");
+        AddMeshToList(tower);
     }
 }
 
@@ -123,6 +126,13 @@ void Tema3::Update(float deltaTimeSeconds) {
         RenderMesh(meshes["terrain"], shaders["VC"], modelMatrix, mapTextures["snow"]);
     }
 
+    {
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.f, 0, 0.f));
+        modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.8f, 0.5f));
+        RenderMesh(meshes["tower"], shaders["VC"], modelMatrix);
+    }
+
     if (renderCameraTarget)
     {
         glm::mat4 modelMatrix = glm::mat4(1);
@@ -171,6 +181,8 @@ void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
         glBindTexture(GL_TEXTURE_2D, texture1->GetTextureID());
         glUniform1i(glGetUniformLocation(shader->program, "texture1"), 0);
         glUniform1i(glGetUniformLocation(shader->program, "useTexture"), 1);
+    } else {
+        glUniform1i(glGetUniformLocation(shader->program, "useTexture"), 0);
     }
 
     glUniform3fv(glGetUniformLocation(shader->program, "fogColor"), 1, glm::value_ptr(glm::vec3(0.7f, 0.7f, 0.75f)));
