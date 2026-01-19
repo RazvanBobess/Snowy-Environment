@@ -372,3 +372,53 @@ Mesh* object3D::CreateObservationTower(
 
     return tower;
 }
+
+Mesh* object3D::CreatePyramid
+    (std::unordered_map<std::string, 
+    Mesh*>& meshes, 
+    const char* name, 
+    float baseLength, 
+    float height, 
+    glm::vec3 color) 
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+
+    float halfBase = baseLength * 0.5f;
+
+    vertices.push_back(VertexFormat(glm::vec3(-halfBase, 0, -halfBase), color));
+    vertices.push_back(VertexFormat(glm::vec3(halfBase, 0, -halfBase), color));
+    vertices.push_back(VertexFormat(glm::vec3(halfBase, 0, halfBase), color));
+    vertices.push_back(VertexFormat(glm::vec3(-halfBase, 0, halfBase), color));
+    vertices.push_back(VertexFormat(glm::vec3(0, height, 0), color));
+
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(4);
+
+    indices.push_back(1);
+    indices.push_back(2);
+    indices.push_back(4);
+
+    indices.push_back(2);
+    indices.push_back(3);
+    indices.push_back(4);
+
+    indices.push_back(3);
+    indices.push_back(0);
+    indices.push_back(4);
+
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(2);
+
+    indices.push_back(0);
+    indices.push_back(2);
+    indices.push_back(3);
+
+    Mesh* pyramid = new Mesh(name);
+
+    pyramid->InitFromData(vertices, indices);
+
+    return pyramid;
+}

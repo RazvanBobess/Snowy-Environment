@@ -28,4 +28,6 @@ namespace object3D {
     Mesh* CreateTerrain(const std::string& name, glm::vec3 center);
 
     Mesh* CreateObservationTower(std::unordered_map<std::string, Mesh*>& meshes, const char* name);
+
+    Mesh* CreatePyramid(std::unordered_map<std::string, Mesh*>& meshes, const char* name, float baseLength, float height, glm::vec3 color);
 }

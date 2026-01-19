@@ -65,6 +65,8 @@ void Tema3::Init() {
 
         Mesh* tower = object3D::CreateObservationTower(meshes, "tower");
         AddMeshToList(tower);
+
+        meshes["light_cone"] = object3D::CreatePyramid(meshes, "light_cone", 0.6f, 1.f, glm::vec3(0.1f, 0.1f, 0.1f));
     }
 }
 
@@ -131,6 +133,21 @@ void Tema3::Update(float deltaTimeSeconds) {
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0.f, 0, 0.f));
         modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f, 0.8f, 0.5f));
         RenderMesh(meshes["tower"], shaders["VC"], modelMatrix);
+    }
+
+    {
+        float angle1 = glm::radians(-30.0f);
+        float angle2 = glm::radians(30.0f);
+
+        glm::mat4 modelMatrix = glm::mat4(1);
+        modelMatrix *= glm::translate(glm::mat4(1), glm::vec3(0.f, 9.f, 1.5f));
+        modelMatrix *= glm::rotate(glm::mat4(1), angle1, glm::vec3(1, 0, 0));
+        RenderMesh(meshes["light_cone"], shaders["VertexColor"], modelMatrix);
+
+        modelMatrix = glm::mat4(1);
+        modelMatrix *= glm::translate(glm::mat4(1), glm::vec3(0.f, 9.f, -1.5f));
+        modelMatrix *= glm::rotate(glm::mat4(1), angle2, glm::vec3(1, 0, 0));
+        RenderMesh(meshes["light_cone"], shaders["VertexColor"], modelMatrix);
     }
 
     if (renderCameraTarget)
