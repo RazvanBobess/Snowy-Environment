@@ -151,44 +151,32 @@ void Tema3::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
     int isTrunk = 0;
     int isLeaves = 0;
     int isSnow = 0;
-    int useTextureVal = 0;
+
+    glUniform1f(glGetUniformLocation(shader->program, "treeHeight"), 5.0f);
 
     if (mesh == meshes["tree"]) {
         isTrunk = 1;
-        useTextureVal = 1;
-        glUniform1f(glGetUniformLocation(shader->program, "treeHeight"), 5.0f); 
-    } 
-    else if (mesh == meshes["leaves"]) {
+    } else if (mesh == meshes["leaves"]) {
         isLeaves = 1;
-        useTextureVal = 1;
         glUniform1f(glGetUniformLocation(shader->program, "bendPhase"), bendPhase);
-        glUniform1f(glGetUniformLocation(shader->program, "bendFrequency"), bendFrequency);
-        glUniform1f(glGetUniformLocation(shader->program, "treeHeight"), 5.0f); 
-    } else if (mesh == meshes["terrain"]) {
-        isSnow = 1;
-        useTextureVal = 1;
+        glUniform1f(glGetUniformLocation(shader->program, "bendFrequency"), bendFrequency); 
     }
 
     glUniform1i(glGetUniformLocation(shader->program, "isTrunk"), isTrunk);
     glUniform1i(glGetUniformLocation(shader->program, "isLeaves"), isLeaves);
-    glUniform1i(glGetUniformLocation(shader->program, "isSnow"), isSnow);
 
-    if (useTextureVal == 1 && texture1) {
+    if (texture1)
+    {
         glActiveTexture(GL_TEXTURE0);
-        texture1->BindToTextureUnit(GL_TEXTURE0);
-
-        if (isSnow == 1) {
-            glUniform1i(glGetUniformLocation(shader->program, "texture1"), 0);
-        } 
-        else if (isTrunk == 1) {
-            glUniform1i(glGetUniformLocation(shader->program, "texture2"), 0);
-        } 
-        else if (isLeaves == 1) {
-            glUniform1i(glGetUniformLocation(shader->program, "texture3"), 0);
-        }
+        glBindTexture(GL_TEXTURE_2D, texture1->GetTextureID());
+        glUniform1i(glGetUniformLocation(shader->program, "texture1"), 0);
+        glUniform1i(glGetUniformLocation(shader->program, "useTexture"), 1);
     }
 
-    glUniform1i(glGetUniformLocation(shader->program, "useTexture"), useTextureVal);
+    glUniform3fv(glGetUniformLocation(shader->program, "fogColor"), 1, glm::value_ptr(glm::vec3(0.7f, 0.7f, 0.75f)));
+    glUniform1f(glGetUniformLocation(shader->program, "fogStart"), 10.0f);
+    glUniform1f(glGetUniformLocation(shader->program, "fogEnd"), 40.0f);
+    glUniform3fv(glGetUniformLocation(shader->program, "cameraPos"), 1, glm::value_ptr(GetSceneCamera()->m_transform->GetWorldPosition()));
 
     glBindVertexArray(mesh->GetBuffers()->m_VAO);
     glDrawElements(mesh->GetDrawMode(), static_cast<GLsizei>(mesh->indices.size()), GL_UNSIGNED_INT, 0);
